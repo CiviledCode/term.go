@@ -8,9 +8,9 @@ import (
 	_ "unsafe"
 )
 
-// screen represents a Terminal application screen. This struct contains functions
+// Screen represents a Terminal application Screen. This struct contains functions
 // to manipulate and extend on top of the current Terminal using ascii escape codes.
-type screen struct {
+type Screen struct {
 	Terminal *term.Term
 
 	running bool
@@ -20,8 +20,8 @@ type screen struct {
 	InputManager *input.Manager
 }
 
-// NewScreen creates a new 'screen' object using an io.Writer.
-func NewScreen() *screen {
+// NewScreen creates a new 'Screen' object using an io.Writer.
+func NewScreen() *Screen {
 	t, err := term.Open("/dev/tty", term.Speed(19200))
 	if err != nil {
 		fmt.Println(err)
@@ -31,21 +31,21 @@ func NewScreen() *screen {
 	if err != nil {
 		fmt.Println(err)
 	}
-	return &screen{Terminal: t, ScreenCursor: Cursor{terminal: t}, running: true, InputManager: input.NewManager(t)}
+	return &Screen{Terminal: t, ScreenCursor: Cursor{terminal: t}, running: true, InputManager: input.NewManager(t)}
 }
 
-// ClearScreen sends an ASCII escape character to the screen writer to clear the text of all lines visible.
-func (s *screen) ClearScreen() {
+// ClearScreen sends an ASCII escape character to the Screen writer to clear the text of all lines visible.
+func (s *Screen) ClearScreen() {
 	fmt.Fprint(s.Terminal, "\x1b[2J")
 }
 
 // Reset wipes the current color configuration for the next characters being drawn.
-func (s *screen) Reset() {
+func (s *Screen) Reset() {
 	fmt.Fprint(s.Terminal, "\x1b[0m")
 }
 
 // Size retrieves the size of the working Terminal space.
-func (s *screen) Size() (int, int) {
+func (s *Screen) Size() (int, int) {
 	ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
 	if err != nil {
 		panic(err)
@@ -54,13 +54,13 @@ func (s *screen) Size() (int, int) {
 	return int(ws.Col), int(ws.Row)
 }
 
-// ClearLine sends an ASCII escape character to the screen writer to clear the current line that the cursor is on.
-func (s *screen) ClearLine() {
+// ClearLine sends an ASCII escape character to the Screen writer to clear the current line that the cursor is on.
+func (s *Screen) ClearLine() {
 	fmt.Fprint(s.Terminal, "\x1b[2K")
 }
 
-// ClearFromCursor sends an ASCII escape character to the screen writer
-func (s *screen) ClearFromCursor(eof bool) {
+// ClearFromCursor sends an ASCII escape character to the Screen writer
+func (s *Screen) ClearFromCursor(eof bool) {
 	if !eof {
 		fmt.Fprint(s.Terminal, "\x0b[1K")
 	} else {
@@ -68,10 +68,10 @@ func (s *screen) ClearFromCursor(eof bool) {
 	}
 }
 
-// ClearToCursor sends an ASCII escape character to the screen writer to clear all content from a starting point to the cursor.
-// If bos is set to true, we start at the beginning of the screen and clear all content to the cursor. If not, we clear all content from the start of the line
+// ClearToCursor sends an ASCII escape character to the Screen writer to clear all content from a starting point to the cursor.
+// If bos is set to true, we start at the beginning of the Screen and clear all content to the cursor. If not, we clear all content from the start of the line
 // to the cursor.
-func (s *screen) ClearToCursor(bos bool) {
+func (s *Screen) ClearToCursor(bos bool) {
 	if !bos {
 		fmt.Fprint(s.Terminal, "\x1b[1K")
 	} else {
@@ -80,7 +80,7 @@ func (s *screen) ClearToCursor(bos bool) {
 }
 
 // Close sets the Terminal to stop running.
-func (s *screen) Close() {
+func (s *Screen) Close() {
 	s.running = false
 	s.ClearScreen()
 
@@ -91,6 +91,6 @@ func (s *screen) Close() {
 }
 
 // ShouldClose depicts if the application has had a close call or not.
-func (s *screen) ShouldClose() bool {
+func (s *Screen) ShouldClose() bool {
 	return !s.running
 }
