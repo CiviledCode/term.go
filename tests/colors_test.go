@@ -1,4 +1,4 @@
-package go_colorize
+package tests
 
 import (
 	"github.com/civiledcode/term.go/colors"

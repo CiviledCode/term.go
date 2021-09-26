@@ -1,4 +1,4 @@
-package go_colorize
+package tests
 
 import (
 	"fmt"
