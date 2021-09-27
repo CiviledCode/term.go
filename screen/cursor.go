@@ -21,7 +21,7 @@ func (c *Cursor) Home() {
 func (c *Cursor) SetPosition(x, y uint16) {
 	c.x = x
 	c.y = y
-	fmt.Fprintf(c.terminal, "\x1b[%v;%vf", y, x)
+	fmt.Fprintf(c.terminal, "\x1b[%v;%vf", x, y)
 }
 
 // LinePosition sets the cursor position on the X axis.

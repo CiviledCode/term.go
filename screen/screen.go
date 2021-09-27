@@ -51,7 +51,7 @@ func (s *Screen) Size() (int, int) {
 		panic(err)
 		return -1, -1
 	}
-	return int(ws.Col), int(ws.Row)
+	return int(ws.Row), int(ws.Col)
 }
 
 // ClearLine sends an ASCII escape character to the Screen writer to clear the current line that the cursor is on.
