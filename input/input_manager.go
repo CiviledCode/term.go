@@ -31,18 +31,22 @@ func (im *Manager) OnResize(event func(uint16, uint16) error) {
 
 // Update should be called every tick or frame of your application to get the latest system calls and inputs.
 func (im *Manager) Update() {
+	// TODO: Unhold the thread
 	s := <-im.signalChannel
 	switch s {
 	case unix.SIGWINCH:
 		{
-			ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
-			if err != nil {
-				panic(err)
-			}
-			err = im.resizeHandler(ws.Col, ws.Row)
+			if im.resizeHandler != nil {
+				ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
+				if err != nil {
+					panic(err)
+				}
 
-			if err != nil {
-				panic(err)
+				err = im.resizeHandler(ws.Col, ws.Row)
+
+				if err != nil {
+					panic(err)
+				}
 			}
 		}
 	default:
@@ -51,7 +55,7 @@ func (im *Manager) Update() {
 }
 
 func (im *Manager) Input() []byte {
-	l := make([]byte, 6)
+	l := make([]byte, 8)
 	_, err := im.terminal.Read(l)
 
 	if err != nil {
