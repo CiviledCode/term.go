@@ -54,7 +54,9 @@ func (im *Manager) Update() {
 	}
 }
 
-func (im *Manager) Input() []byte {
+// Input returns the latest input being pressed. This will hold the current thread until a new key is pressed,
+// so using it as means of limiting update calls has proven effective.
+func (im *Manager) Input() (rune, bool) {
 	l := make([]byte, 8)
 	_, err := im.terminal.Read(l)
 
@@ -62,5 +64,5 @@ func (im *Manager) Input() []byte {
 		fmt.Println(err)
 	}
 
-	return l
+	return parseKey(l)
 }

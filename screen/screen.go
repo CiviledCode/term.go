@@ -34,8 +34,12 @@ func NewScreen() *Screen {
 	return &Screen{Terminal: t, ScreenCursor: Cursor{terminal: t}, running: true, InputManager: input.NewManager(t)}
 }
 
-// ClearScreen sends an ASCII escape character to the Screen writer to clear the text of all lines visible.
+// ClearScreen sends an ASCII escape character to the Screen writer to clear the terminal history.
 func (s *Screen) ClearScreen() {
+	fmt.Fprint(s.Terminal, "\x1b[3J")
+}
+
+func (s *Screen) JumpLines() {
 	fmt.Fprint(s.Terminal, "\x1b[2J")
 }
 
