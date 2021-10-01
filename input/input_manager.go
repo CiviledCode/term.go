@@ -6,6 +6,7 @@ import (
 	"golang.org/x/sys/unix"
 	"os"
 	"os/signal"
+	"unicode/utf8"
 )
 
 // Manager interacts with signals to provide a manager for all user input within the terminal.
@@ -54,7 +55,7 @@ func (im *Manager) Update() {
 	}
 }
 
-func (im *Manager) Input() []byte {
+func (im *Manager) Input() (rune, int) {
 	l := make([]byte, 8)
 	_, err := im.terminal.Read(l)
 
@@ -62,5 +63,5 @@ func (im *Manager) Input() []byte {
 		fmt.Println(err)
 	}
 
-	return l
+	return utf8.DecodeLastRune(l)
 }
