@@ -29,9 +29,8 @@ func (im *Manager) OnResize(event func(uint16, uint16) error) {
 	im.resizeHandler = event
 }
 
-// Update should be called every tick or frame of your application to get the latest system calls and inputs.
-func (im *Manager) Update() {
-	// TODO: Unhold the thread
+// Resize holds the thread until a resize event happens.
+func (im *Manager) Resize() {
 	s := <-im.signalChannel
 	switch s {
 	case unix.SIGWINCH:
