@@ -36,7 +36,7 @@ func NewScreen() *Screen {
 
 // ClearScreen sends an ASCII escape character to the Screen writer to clear the terminal history.
 func (s *Screen) ClearScreen() {
-	fmt.Fprint(s.Terminal, "\\033c")
+	fmt.Fprint(s.Terminal, "\\\033c")
 }
 
 func (s *Screen) JumpLines() {
