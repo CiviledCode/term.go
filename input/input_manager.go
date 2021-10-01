@@ -12,8 +12,6 @@ import (
 type Manager struct {
 	signalChannel chan os.Signal
 
-	resizeHandler func(uint16, uint16) error
-
 	terminal *term.Term
 }
 
@@ -24,33 +22,24 @@ func NewManager(t *term.Term) *Manager {
 	return &im
 }
 
-// OnResize sets the event listener that's executed when the window is resized.
-func (im *Manager) OnResize(event func(uint16, uint16) error) {
-	im.resizeHandler = event
-}
-
-// Resize holds the thread until a resize event happens.
-func (im *Manager) Resize() {
+// Resize holds the thread until a resize event happens. If a resize event happens, the new window sizes are returned.
+func (im *Manager) Resize() (uint16, uint16) {
 	s := <-im.signalChannel
 	switch s {
 	case unix.SIGWINCH:
 		{
-			if im.resizeHandler != nil {
-				ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
-				if err != nil {
-					panic(err)
-				}
-
-				err = im.resizeHandler(ws.Col, ws.Row)
-
-				if err != nil {
-					panic(err)
-				}
+			ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
+			if err != nil {
+				panic(err)
 			}
+
+			return ws.Col, ws.Row
 		}
 	default:
 		fmt.Println("Unknown signal.")
 	}
+
+	return 0, 0
 }
 
 // Input returns the latest input being pressed. This will hold the current thread until a new key is pressed,
