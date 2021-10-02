@@ -34,17 +34,12 @@ func NewScreen() *Screen {
 	return &Screen{Terminal: t, ScreenCursor: Cursor{terminal: t}, running: true, InputManager: input.NewManager(t)}
 }
 
-// ClearScreen sends an ASCII escape character to the Screen writer to clear the terminal history.
-func (s *Screen) ClearScreen() {
-	fmt.Fprint(s.Terminal, "\\\033c")
-}
-
 func (s *Screen) JumpLines() {
 	fmt.Fprint(s.Terminal, "\x1b[2J")
 }
 
-// Reset wipes the current color configuration for the next characters being drawn.
-func (s *Screen) Reset() {
+// ResetStyle wipes the current color configuration for the next characters being drawn.
+func (s *Screen) ResetStyle() {
 	fmt.Fprint(s.Terminal, "\x1b[0m")
 }
 
@@ -56,6 +51,35 @@ func (s *Screen) Size() (int, int) {
 		return -1, -1
 	}
 	return int(ws.Col), int(ws.Row)
+}
+
+// ClearScreenHistory sends an ASCII escape character to the Screen writer to clear the terminal history.
+func (s *Screen) ClearScreenHistory() {
+	fmt.Fprint(s.Terminal, "\\\033c")
+}
+
+// ClearLines clears all the visible lines on the screen.
+func (s *Screen) ClearLines() {
+	s.ScreenCursor.Save()
+	_, height := s.Size()
+	s.ScreenCursor.Home()
+
+	for i := 0; i < height; i++ {
+		s.ClearLine()
+		s.ScreenCursor.Down(1, true)
+	}
+
+	s.ScreenCursor.Return()
+}
+
+// Up moves the screen up x amount of lines.
+func (s *Screen) Up(amount uint8) {
+	fmt.Fprintf(s.Terminal, "\x1b[%vA", amount)
+}
+
+// Down moves the screen down x amount of lines.
+func (s *Screen) Down(amount uint8) {
+	fmt.Fprintf(s.Terminal, "\x1b[%vB", amount)
 }
 
 // ClearLine sends an ASCII escape character to the Screen writer to clear the current line that the cursor is on.
@@ -86,7 +110,8 @@ func (s *Screen) ClearToCursor(bos bool) {
 // Close sets the Terminal to stop running.
 func (s *Screen) Close() {
 	s.running = false
-	s.ClearScreen()
+	s.ClearLines()
+	s.ScreenCursor.Home()
 
 	err := s.Terminal.Restore()
 	if err != nil {

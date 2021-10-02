@@ -9,6 +9,8 @@ import (
 type Cursor struct {
 	x, y uint16
 
+	hidden bool
+
 	terminal io.Writer
 }
 
@@ -31,23 +33,25 @@ func (c *Cursor) LinePosition(x uint16) {
 }
 
 // Up moves the cursor up x amount of lines. If startOfLine is true, then the cursor is moved to the start of the resulting line.
-func (c *Cursor) Up(amount uint8, startOfLine bool) {
+func (c *Cursor) Up(amount uint16, startOfLine bool) {
 	if startOfLine {
-		fmt.Fprintf(c.terminal, "\x1b[%vF", amount)
+		c.SetPosition(uint16(0), c.y-amount)
 	} else {
-		fmt.Fprintf(c.terminal, "\x1b[%vA", amount)
+		c.SetPosition(c.x, c.y-amount)
 	}
-	c.y += uint16(amount)
+
+	c.y -= amount
 }
 
 // Down moves the cursor down x amount of lines. If startOfLine is true, then the cursor is moved to the start of the resulting line.
-func (c *Cursor) Down(amount uint8, startOfLine bool) {
+func (c *Cursor) Down(amount uint16, startOfLine bool) {
 	if startOfLine {
-		fmt.Fprintf(c.terminal, "\x1b[%vE", amount)
+		c.SetPosition(uint16(0), c.y+amount)
 	} else {
-		fmt.Fprintf(c.terminal, "\x1b[%vB", amount)
+		c.SetPosition(c.x, c.y+amount)
 	}
-	c.y -= uint16(amount)
+
+	c.y += amount
 }
 
 // Right moves the cursor right x amount of spaces.
@@ -75,4 +79,20 @@ func (c *Cursor) Return() {
 // Position returns the current position of the cursor represented on a 2D coordinate plane.
 func (c *Cursor) Position() (uint16, uint16) {
 	return c.x, c.y
+}
+
+// Show sets the cursor visibility to be shown.
+func (c *Cursor) Show() {
+	if c.hidden {
+		c.hidden = false
+		fmt.Fprint(c.terminal, "\x1b[?25h")
+	}
+}
+
+// Hide sets the cursor visibility to be hidden.
+func (c *Cursor) Hide() {
+	if !c.hidden {
+		c.hidden = true
+		fmt.Fprint(c.terminal, "\x1b[?25l")
+	}
 }
