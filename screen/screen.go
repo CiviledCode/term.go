@@ -60,7 +60,10 @@ func (s *Screen) ClearScreenHistory() {
 
 // ClearLines clears all the visible lines on the screen.
 func (s *Screen) ClearLines() {
-	fmt.Fprint(s.Terminal, "\u001b[2J")
+	s.ScreenCursor.Save()
+	s.ScreenCursor.Home()
+	s.ClearFromCursor(true)
+	s.ScreenCursor.Return()
 }
 
 // Up moves the screen up x amount of lines.
