@@ -70,6 +70,8 @@ func (s *Screen) ClearLines() {
 	}
 
 	s.ScreenCursor.Return()
+
+	//fmt.Fprint(s.Terminal, "\u001b[2J")
 }
 
 // Up moves the screen up x amount of lines.
@@ -84,15 +86,15 @@ func (s *Screen) Down(amount uint8) {
 
 // ClearLine sends an ASCII escape character to the Screen writer to clear the current line that the cursor is on.
 func (s *Screen) ClearLine() {
-	fmt.Fprint(s.Terminal, "\x1b[2K")
+	fmt.Fprint(s.Terminal, "\u001b[2K")
 }
 
 // ClearFromCursor sends an ASCII escape character to the Screen writer
 func (s *Screen) ClearFromCursor(eof bool) {
 	if !eof {
-		fmt.Fprint(s.Terminal, "\x0b[1K")
+		fmt.Fprint(s.Terminal, "\u001B[0K")
 	} else {
-		fmt.Fprint(s.Terminal, "\x0b[1J")
+		fmt.Fprint(s.Terminal, "\u001B[0J")
 	}
 }
 
