@@ -34,6 +34,7 @@ func NewScreen() *Screen {
 	return &Screen{Terminal: t, ScreenCursor: Cursor{terminal: t}, running: true, InputManager: input.NewManager(t)}
 }
 
+// JumpLines jumps to a new clean portion of the screen. This creates a history, so it shouldn't be called frequently.
 func (s *Screen) JumpLines() {
 	fmt.Fprint(s.Terminal, "\x1b[2J")
 }
@@ -81,7 +82,8 @@ func (s *Screen) ClearLine() {
 	fmt.Fprint(s.Terminal, "\u001b[2K")
 }
 
-// ClearFromCursor sends an ASCII escape character to the Screen writer
+// ClearFromCursor sends an ASCII escape character to the Screen writer to clear all content from the cursor to a point.
+// If eof is true, this point is the end of the file. If not, it's the end of the current line.
 func (s *Screen) ClearFromCursor(eof bool) {
 	if !eof {
 		fmt.Fprint(s.Terminal, "\u001B[0K")
@@ -90,9 +92,8 @@ func (s *Screen) ClearFromCursor(eof bool) {
 	}
 }
 
-// ClearToCursor sends an ASCII escape character to the Screen writer to clear all content from a starting point to the cursor.
-// If bos is set to true, we start at the beginning of the Screen and clear all content to the cursor. If not, we clear all content from the start of the line
-// to the cursor.
+// ClearToCursor sends an ASCII escape character to the Screen writer to clear all content starting from a point to the cursor.
+// If bos is true, the point starts at the start of the file. If not, it's at the start of the line.
 func (s *Screen) ClearToCursor(bos bool) {
 	if !bos {
 		fmt.Fprint(s.Terminal, "\x1b[1K")
@@ -101,10 +102,10 @@ func (s *Screen) ClearToCursor(bos bool) {
 	}
 }
 
-// Close sets the Terminal to stop running.
+// Close sets the terminal back in normal mode and signals that the screen should close.
+// We do not clear the screen here because we don't know if we want to keep terminal output even after close.
 func (s *Screen) Close() {
 	s.running = false
-	s.ClearLines()
 	s.ScreenCursor.Home()
 
 	err := s.Terminal.Restore()
