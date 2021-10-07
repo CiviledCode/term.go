@@ -45,13 +45,13 @@ func (s *Screen) ResetStyle() {
 }
 
 // Size retrieves the size of the working Terminal space.
-func (s *Screen) Size() (int, int) {
+func (s *Screen) Size() (uint16, uint16) {
 	ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
 	if err != nil {
 		panic(err)
-		return -1, -1
+		return 0, 0
 	}
-	return int(ws.Col), int(ws.Row)
+	return ws.Col, ws.Row
 }
 
 // ClearScreenHistory sends an ASCII escape character to the Screen writer to clear the terminal history.

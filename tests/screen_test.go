@@ -8,7 +8,7 @@ import (
 
 func TestScreenWrite(t *testing.T) {
 	screen := screen.NewScreen()
-	screen.ClearScreen()
+	screen.ClearLines()
 	fmt.Fprintln(screen.Terminal, "Hello World!")
 	screen.Close()
 }

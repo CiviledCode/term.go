@@ -7,7 +7,7 @@ import (
 
 func TestInput(t *testing.T) {
 	screen := screen.NewScreen()
-	screen.ClearScreen()
+	screen.ClearLines()
 
 	/*
 		for range time.Tick((1000/50)*time.Millisecond) {
