@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// Cursor represents the position of a terminal cursor.
+// Cursor represents the properties of a terminals cursor.
 type Cursor struct {
 	x, y uint16
 

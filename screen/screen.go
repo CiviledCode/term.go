@@ -54,7 +54,7 @@ func (s *Screen) Size() (uint16, uint16) {
 	return ws.Col, ws.Row
 }
 
-// ClearScreenHistory sends an ASCII escape character to the Screen writer to clear the terminal history.
+// ClearScreenHistory sends an ASCII escape character to clear the terminal history.
 func (s *Screen) ClearScreenHistory() {
 	fmt.Fprint(s.Terminal, "\\\033c")
 }
@@ -77,12 +77,12 @@ func (s *Screen) Down(amount uint8) {
 	fmt.Fprintf(s.Terminal, "\x1b[%vB", amount)
 }
 
-// ClearLine sends an ASCII escape character to the Screen writer to clear the current line that the cursor is on.
+// ClearLine sends an ASCII escape character to clear the current line that the cursor is on.
 func (s *Screen) ClearLine() {
 	fmt.Fprint(s.Terminal, "\u001b[2K")
 }
 
-// ClearFromCursor sends an ASCII escape character to the Screen writer to clear all content from the cursor to a point.
+// ClearFromCursor sends an ASCII escape character to clear all content from the cursor to a point.
 // If eof is true, this point is the end of the file. If not, it's the end of the current line.
 func (s *Screen) ClearFromCursor(eof bool) {
 	if !eof {
@@ -92,7 +92,7 @@ func (s *Screen) ClearFromCursor(eof bool) {
 	}
 }
 
-// ClearToCursor sends an ASCII escape character to the Screen writer to clear all content starting from a point to the cursor.
+// ClearToCursor sends an ASCII escape character to clear all content starting from a point to the cursor.
 // If bos is true, the point starts at the start of the file. If not, it's at the start of the line.
 func (s *Screen) ClearToCursor(bos bool) {
 	if !bos {

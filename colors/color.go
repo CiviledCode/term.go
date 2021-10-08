@@ -2,7 +2,7 @@ package colors
 
 import "fmt"
 
-// Color represents a renderable terminal color, defined using standard ascii color codes.
+// Color represents the various color formats that ASCII escape codes use for text-colorization.
 type Color interface {
 	// Compress condenses the color down into a string format that we can append to the end of an escape character.
 	Compress() string
