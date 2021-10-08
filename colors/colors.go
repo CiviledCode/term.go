@@ -25,6 +25,7 @@ const (
 
 // TODO: Index colors
 
+// Style creates and builds various formats of ASCII escape codes for text formatting in terminals.
 type Style struct {
 	mode textMode
 
@@ -41,15 +42,19 @@ func NewStyle(mode textMode) Style {
 func (s *Style) SetForegroundColor(c Color) {
 	_, isDefault := c.(DefaultColor)
 	if isDefault {
-		if s.mode > 5 {
-			s.mode = Normal
+		if s.mode == rgbBackground || s.mode == indexBackground {
+			s.background = nil
 		}
+
+		s.mode = Normal
 		s.foreground = c
+		return
 	}
 
 	rgb, isRGB := c.(RGBColor)
 	if isRGB {
 		s.mode = rgbForeground
+		s.background = nil
 		s.foreground = rgb
 	}
 }
@@ -58,10 +63,13 @@ func (s *Style) SetForegroundColor(c Color) {
 func (s *Style) SetBackgroundColor(c Color) {
 	_, isDefault := c.(DefaultColor)
 	if isDefault {
-		if s.mode > 5 {
-			s.mode = Normal
+		if s.mode == rgbForeground || s.mode == indexForeground {
+			s.foreground = nil
 		}
+
+		s.mode = Normal
 		s.background = c
+		return
 	}
 
 	_, isRGB := c.(RGBColor)
